@@ -42,7 +42,14 @@ class FeatureContext implements Context
      */
     public function thereIsAThatWasBornIn($customer, $year, $month, $day)
     {
-        throw new PendingException();
+        $this->user = new User([
+            'name' => $customer,
+            'birthday' => now()->setDate($year, $month, $day),
+            'email' => uniqid() . '@example.com',
+            'password' => Hash::make('secret'),
+            'remember_token' => Str::random(10),
+        ]);
+        $this->user->save();
     }
 
     /**
@@ -50,7 +57,10 @@ class FeatureContext implements Context
      */
     public function thereIsCarForRent($qty, $carName)
     {
-        throw new PendingException();
+        Car::insert([[
+            'car' => $carName,
+            'qty' => $qty
+        ]]);
     }
 
     /**
@@ -58,7 +68,9 @@ class FeatureContext implements Context
      */
     public function wantsToRentACar($customer, $brand)
     {
-        throw new PendingException();
+        $this->response = $this->actingAs($this->user, 'sanctum')->json('POST', '/api/rent', [
+            'car' => $brand
+        ]);
     }
 
     /**
@@ -66,6 +78,14 @@ class FeatureContext implements Context
      */
     public function willBeAbleToRentACar($customer)
     {
-        throw new PendingException();
+        Assert::assertEquals($this->response->getStatusCode(), 201);
+    }
+
+    /**
+     * @Then :customer will be not able to rent a car
+     */
+    public function willBeNotAbleToRentACar($customer)
+    {
+        Assert::assertEquals($this->response->getStatusCode(), 403);
     }
 }
