@@ -46,25 +46,25 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given there is :arg2 :arg1 car for rent
+     * @Given there is :qty :carName car for rent
      */
-    public function thereIsCarForRent($arg1, $arg2)
+    public function thereIsCarForRent($qty, $carName)
     {
         throw new PendingException();
     }
 
     /**
-     * @When :arg1, wants to rent :arg2 car
+     * @When :customer, wants to rent :carName car
      */
-    public function wantsToRentCar($arg1, $arg2)
+    public function wantsToRentACar($customer, $brand)
     {
         throw new PendingException();
     }
 
     /**
-     * @Then :arg1 will be able to rent a car
+     * @Then :customer will be able to rent a car
      */
-    public function willBeAbleToRentACar($arg1)
+    public function willBeAbleToRentACar($customer)
     {
         throw new PendingException();
     }
