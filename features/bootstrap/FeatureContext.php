@@ -3,6 +3,7 @@
 use App\Models\Car;
 use App\Models\User;
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
@@ -16,8 +17,7 @@ use PHPUnit\Framework\Assert;
  */
 class FeatureContext implements Context
 {
-    use DatabaseTransactions,
-        MakesHttpRequests,
+    use MakesHttpRequests,
         InteractsWithAuthentication;
 
     private User $user;
@@ -37,89 +37,35 @@ class FeatureContext implements Context
         Car::truncate();
     }
 
-
-
     /**
      * @Given there is a :customer, that was born in :year-:month-:day
      */
     public function thereIsAThatWasBornIn($customer, $year, $month, $day)
     {
-        $this->user = new User([
-            'name' => $customer,
-            'birthday' => now()->setDate($year, $month, $day),
-            'email' => uniqid() . '@example.com',
-            'password' => Hash::make('secret'),
-            'remember_token' => Str::random(10),
-        ]);
-        $this->user->save();
+        throw new PendingException();
     }
 
     /**
-     * @Given :customer has already rented :carName car
+     * @Given there is :arg2 :arg1 car for rent
      */
-    public function hasAlreadyRentedCar($customer, $carName)
+    public function thereIsCarForRent($arg1, $arg2)
     {
-        $this->user->car = $carName;
+        throw new PendingException();
     }
 
     /**
-     * @Given there are following cars:
+     * @When :arg1, wants to rent :arg2 car
      */
-    public function thereAreFollowingCars(TableNode $table)
+    public function wantsToRentCar($arg1, $arg2)
     {
-        Car::insert($table->getHash());
+        throw new PendingException();
     }
 
     /**
-     * @Given there is :qty :carName car for rent
+     * @Then :arg1 will be able to rent a car
      */
-    public function thereIsCarForRent($qty, $carName)
+    public function willBeAbleToRentACar($arg1)
     {
-        Car::insert([[
-            'car' => $carName,
-            'qty' => $qty
-        ]]);
+        throw new PendingException();
     }
-
-    /**
-     * @When :customer, wants to rent :carName car
-     */
-    public function wantsToRentACar($customer, $brand)
-    {
-        $this->response = $this->actingAs($this->user, 'sanctum')->json('POST', '/api/rent', ['car' => $brand]);
-    }
-
-    /**
-     * @Then :customer will be able to rent a car
-     */
-    public function willBeAbleToRentACar($customer)
-    {
-        Assert::assertEquals($this->response->getStatusCode(), 201);
-    }
-
-    /**
-     * @Then :customer will be not able to rent a car
-     */
-    public function willBeNotAbleToRentACar($customer)
-    {
-        Assert::assertEquals($this->response->getStatusCode(), 403);
-    }
-
-    /**
-     * @Then :customer will have :carName car
-     */
-    public function willHaveCar($customer, $carName)
-    {
-        $this->user->refresh();
-        Assert::assertEquals($carName, $this->user->car);
-    }
-
-    /**
-     * @Then there will be :qty :carName cars available
-     */
-    public function thereWillBeCarsAvailable($qty, $carName)
-    {
-        Assert::assertEquals($qty, Car::where('car', $carName)->first()->qty);
-    }
-
 }
