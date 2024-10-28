@@ -88,4 +88,37 @@ class FeatureContext implements Context
     {
         Assert::assertEquals($this->response->getStatusCode(), 403);
     }
+
+    /**
+     * @Given :customer has already rented :carName car
+     */
+    public function hasAlreadyRentedCar($customer, $carName)
+    {
+        $this->user->car = $carName;
+    }
+
+    /**
+     * @Given there are following cars:
+     */
+    public function thereAreFollowingCars(TableNode $table)
+    {
+        Car::insert($table->getHash());
+    }
+
+    /**
+     * @Then :customer will have :carName car
+     */
+    public function willHaveCar($customer, $carName)
+    {
+        $this->user->refresh();
+        Assert::assertEquals($carName, $this->user->car);
+    }
+
+    /**
+     * @Then there will be :qty :carName cars available
+     */
+    public function thereWillBeCarsAvailable($qty, $carName)
+    {
+        Assert::assertEquals($qty, Car::where('car', $carName)->first()->qty);
+    }
 }
